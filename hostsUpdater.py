@@ -1,6 +1,6 @@
 # coding=utf-8
 import sys
-import urllib2
+import urllib.request
 
 class Updater(object):
 
@@ -29,20 +29,20 @@ class Updater(object):
         selection = '0'
 
         while selection == '0' or selection == '':
-            print '-'*32 + ' Available Hosts Source ' + '-'*32 + '\n'
+            print('-'*32 + ' Available Hosts Source ' + '-'*32 + '\n')
             for index, hosts in enumerate(self.available_hosts_list):
-                print '[{index}] {alias:<18} ({src})'.format(index=index+1, alias=hosts[0], src=hosts[1])
+                print('[{index}] {alias:<18} ({src})'.format(index=index+1, alias=hosts[0], src=hosts[1]))
                 # print '[' + str(index+1) + '] ' + hosts[0] + ' (' + hosts[1] + ')'
-            print '\n[-] Select a resource. (press "Ctrl+C" to exit.):'
-            selection = raw_input('[>] ')
+            print('\n[-] Select a resource. (press "Ctrl+C" to exit.):')
+            selection = input('[>] ')
         else:
             index = int(selection) - 1
             if self.available_hosts_list[index]:
                 hosts_url = self.available_hosts_list[index][1]
-                print '\n'
+                print('\n')
                 self.update(hosts_url)
             else:
-                print 'Could not found the hosts url in hosts list. Program will be exit.'
+                print('Could not found the hosts url in hosts list. Program will be exit.')
                 sys.exit(1)
 
 
@@ -50,12 +50,12 @@ class Updater(object):
         """更新操作"""
         content = self.__fetch_hosts_content(hosts_url)
         if content:
-            print '[*] Updating....'
-            with open(self.hosts_file, 'w') as file:
+            print('[*] Updating....')
+            with open(self.hosts_file, 'wb') as file:
                 file.write(content)
-            print '[*] Completed successfully!'
+            print('[*] Completed successfully!')
         else:
-            print '[#] No content. Update finished.'
+            print('[#] No content. Update finished.')
             sys.exit(0)
 
 
@@ -64,25 +64,25 @@ class Updater(object):
 
         content = None
         try:
-            print '[*] Connecting {url}'.format(url=url)
-            resp = urllib2.urlopen(url)
-        except urllib2.HTTPError as e:
+            print('[*] Connecting {url}'.format(url=url))
+            resp = urllib.request.urlopen(url)
+        except urllib.HTTPError as e:
             if e.code == 404:
-                print '[#] Error 404: Resource not found.'
-                print '[#] Program exit.'
+                print('[#] Error 404: Resource not found.')
+                print('[#] Program exit.')
                 sys.exit(0)
         else:
             status_code = resp.getcode()
             if status_code == 200:
-                print '[*] Downloading....'
+                print('[*] Downloading....')
                 content = resp.read()
             elif status_code == 404:
-                print '[#] Error 404: Resource not found.'
-                print '[#] Program exit.'
+                print('[#] Error 404: Resource not found.')
+                print('[#] Program exit.')
                 sys.exit(0)
             else:
-                print '[#] Error {code}'.format(code=status_code)
-                print '[#] Program exit.'
+                print('[#] Error {code}'.format(code=status_code))
+                print('[#] Program exit.')
                 sys.exit(0)
 
         return content
